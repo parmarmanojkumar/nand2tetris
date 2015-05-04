@@ -1,0 +1,12 @@
+CHIP CompareLessThanZero16 {
+    IN a[16];
+    OUT zr, ng;
+
+    PARTS:
+   // Put you code here:
+   Or8Way (in = a[8..15], out = w1);
+   Or8Way (in = a[0..7], out = w2);
+   Or (a = w1, b = w2, out = w3);
+   Not (in = w3, out = zr);
+   Or (a = a[15], b = false, out = ng);
+}
