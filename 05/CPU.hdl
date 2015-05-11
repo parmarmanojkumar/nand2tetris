@@ -40,11 +40,57 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+    Not(in=instruction[15] ,out=invins15 ); 
+    Mux16(a=aluout ,b= instruction,sel=invins15 ,out= aiout); 
+        
+    Or(a=instruction[5] ,b=invins15 ,out=arload );
+    ARegister(in= aiout ,load=arload ,out=arout );
     
-    ALU(x= ,y= ,zx= ,nx= ,zy= ,ny= ,f= ,no= ,out= ,zr= ,ng= );
-    ARegister(in= ,load= ,out= );
-    DRegister(in= ,load= ,out= );
-    Mux16(a= ,b= ,sel= ,out= ); 
-    Mux16(a= ,b= ,sel= ,out= ); 
-    PC(in= ,load= ,inc= ,reset= ,out= );
+    And(a = instruction[15], b = instruction[12],out = tmp12);
+    Mux16(a= arout ,b=inM ,sel=tmp12 ,out=amout ); 
+    
+    And(a = instruction[15], b = instruction[4],out = tmp4);
+    DRegister(in= aluout,load=tmp4 ,out=drout );
+    
+    Or(a = invins15, b = instruction[11],out = tmp11);
+    Or(a = invins15, b = instruction[10],out = tmp10);
+    And(a = instruction[15], b = instruction[09],out = tmp09);
+    And(a = instruction[15], b = instruction[08],out = tmp08);
+    And(a = instruction[15], b = instruction[07],out = tmp07);
+    And(a = instruction[15], b = instruction[06],out = tmp06);
+    ALU(x  = drout,
+    	y  = amout,
+    	zx = tmp11,
+    	nx = tmp10,
+    	zy = tmp09,
+    	ny = tmp08,
+    	f  = tmp07,
+    	no = tmp06, 
+    	out= aluout,
+    	zr = aluzrout,
+    	ng = alungout);
+    
+    And(a = instruction[2], b = alungout, out  = w1);
+    And(a = instruction[1], b = aluzrout, out  = w2);
+    Or(a = aluzrout,       b = alungout, out  = w3);
+    Not(in = w3, out = w4);
+    And(a = instruction[0], b = w4, out  = w5);
+    And(a = instruction[2], b = instruction[1], out  = w6);
+    And(a = instruction[0], b = w6, out  = w7);
+    Or(a = w1, b = w2, out = w8);
+    Or(a = w5, b = w7, out = w9);
+    Or(a = w8, b = w9, out = w10);
+    And(a = w10, b = instruction[15],out = pcload);
+    PC(in= arout ,load= pcload ,inc= true ,reset=reset ,out[0..14]=pc[0..14] );
+    
+    Not16(in = aluout, out = tmpout1);
+    Not16(in = tmpout1, out = outM);
+    
+    And(a = instruction[15], b = instruction[03],out = tmp03);
+    Not(in = tmp03, out = tmpout2);
+    Not(in = tmpout2, out = writeM);
+    
+    Not16(in = arout, out = tmpout3);
+    Not16(in = tmpout3, out[0..14]=addressM[0..14]);
+    
 }
