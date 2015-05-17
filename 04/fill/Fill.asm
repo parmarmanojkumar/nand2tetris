@@ -13,43 +13,36 @@
 // 8192
 
 (START)
-	@ SCREEN
-	D = A
-	@ screenfill
-	M = D
-	
-	@ 8191
-	D = A
-	@ fillcount
-	M = D
-	
-	@ fillval
-	M = 0
-	
-	@ KBD
-	D = M
-	@ keystrike
-	M = D
-	
-	@ FILL
-	D; JEQ
-	
-	@ fillval
-	M = -1
-		
+@SCREEN
+D=A
+@screenfill
+M=D	
+@8191
+D=A
+@fillcount
+M=D	
+@fillval
+M=0	
+@KBD
+D=M
+@keystrike
+M=D	
+@FILL
+D;JEQ	
+@fillval
+M=-1		
 (FILL)
-	@ fillval
-	D = M
-	@ screenfill
-	A = M
-	M = D
-	@screenfill
-	M = M + 1
-	@ fillcount
-	MD = M-1
-	@ FILL
-	D; JGE
-	
-	@ START
-	0; JMP
+@fillval
+D=M
+@screenfill
+A=M
+M=D
+@screenfill
+M=M+1
+@fillcount
+MD=M-1
+@FILL
+D;JGE	
+@START
+0;JMP
 	
